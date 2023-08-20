@@ -1,6 +1,6 @@
  <h1>WeatherApp</h1>
 
-  <img src="screenshot.png" alt="WeatherApp Screenshot">
+  <img src="screenshot.PNG" alt="WeatherApp Screenshot">
 
   <p>Welcome to the WeatherApp! This is a simple web application that provides you with real-time weather information and beautiful background images based on your location. The app is built using HTML, CSS, and JavaScript, and bundled with Webpack. It leverages the WeatherAPI to fetch weather data and the Pexels API to display stunning background images that match the current weather conditions.</p>
 
