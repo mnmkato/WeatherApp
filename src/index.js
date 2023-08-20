@@ -1,79 +1,81 @@
-import { getCurrentWeather,getPhoto } from "./script.js";
+import { getCurrentWeather,getReadableTextColor} from "./script.js";
 import "./style.css"
 
 const container = document.querySelector(".container")
-
 const dataContainer = document.querySelector(".dataContainer")
 
+//set up default location
 getCurrentWeather("Kampala",loadUi,loadBg)
 
-function getReadableTextColor(backgroundColor) {
-    // Convert the background color to its RGB components
-    const r = parseInt(backgroundColor.substring(1, 3), 16);
-    const g = parseInt(backgroundColor.substring(3, 5), 16);
-    const b = parseInt(backgroundColor.substring(5, 7), 16);
-  
-    // Calculate the relative luminance of the background color
-    const relativeLuminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  
-    // Determine whether to use white or black text based on luminance
-    const textColor = relativeLuminance > 0.5 ? '#000000' : '#ffffff';
-  
-    return textColor;
-}
-  
 function loadUi(data) {
-    console.log(data.location.localtime_epoch)
-    
+    console.log(data)
+   
+    //clea previous data
     container.innerHTML=""
     dataContainer.innerHTML=""
-
+    
+    //display time and date
     const date = new Date(data.location.localtime)
-    makeTimediv(date.toLocaleTimeString({hour:"2-digit",minute:"2-digit",dayPeriod:"narrow"}),date.toLocaleDateString(undefined,{weekday:"long",month:"long",year:"numeric",day:"2-digit"}))
+    let time_text = date.toLocaleTimeString({hour:"2-digit",minute:"2-digit",dayPeriod:"narrow"})
+    let date_text = date.toLocaleDateString(undefined,{weekday:"long",month:"long",year:"numeric",day:"2-digit"})
+    const timeDiv = makeTopdiv(time_text,date_text)
+    container.appendChild(timeDiv)
+    
+    //display search
     makeSearchDiv()
-    makeLocationDiv(data.location.name,data.location.country)
     
-    const datadiv = document.createElement("div")
-    datadiv.classList.add("datadiv")
-    dataContainer.appendChild(datadiv)
-    
-    const conditionDiv =  makeConditionDiv(data.current.condition.icon,data.current.condition.text)
-    datadiv.appendChild(conditionDiv)
+    //display city and country
+    let city =data.location.name
+    let country= data.location.country
+    const locationDiv =  makeTopdiv(city,country,true)
+    container.appendChild(locationDiv)
 
-    const tempDiv =  makeTempDiv(data.current.temp_c)
-    datadiv.appendChild(tempDiv)
+    //display condition and text
+    let cond_icon = data.current.condition.icon
+    let cond_text = data.current.condition.text
+    const conditionDiv =  makeConditionDiv(cond_icon,cond_text)
+    dataContainer.appendChild(conditionDiv)
 
+    //display Tempreature
+    let temp_c =data.current.temp_c
+    const tempDiv =  makeTempDiv(temp_c)
+    dataContainer.appendChild(tempDiv)
 }
 
 function loadBg(data) {
-    container.style.background = `url(${data.photos[0].src.landscape})`
+    //dsplay backgorund cover photo
+    let photo_url=data.photos[0].src.landscape
+    container.style.background = `url(${photo_url})`
     container.style.backgroundSize='cover'
     container.style.backgroundRepeat='no-repeat'
     container.style.backgroundPosition='center center'
 
+    //change location and time background and text color
     const backgroundColor = data.photos[0].avg_color;
     const textColor = getReadableTextColor(backgroundColor);
-
-    const timediv = document.querySelector(".timediv")
-    timediv.style.backgroundColor=backgroundColor
-    timediv.style.color = textColor
-
-    const locationdiv = document.querySelector(".locationdiv")
-    locationdiv.style.backgroundColor=backgroundColor
-    locationdiv.style.color = textColor
+    const topdivs = document.querySelectorAll(".topdiv")
+    topdivs.forEach(div =>{
+        div.style.backgroundColor=backgroundColor
+        div.style.color = textColor
+    })
 }
-function makeTimediv(time,date){
-    const timediv = document.createElement("div")
-    timediv.classList.add("timediv")
+
+function makeTopdiv(h_text,p_text,isLocationDiv){
+    const div = document.createElement("div")
+    div.classList.add("topdiv")
+    if (isLocationDiv) {
+        div.classList.add("locationdiv")
+    }
+    
     const h = document.createElement("h1")
-    h.textContent=time
-    timediv.appendChild(h)
+    h.textContent=h_text
+    div.appendChild(h)
 
     const p = document.createElement("p")
-    p.textContent=date
-    timediv.appendChild(p)
+    p.textContent=p_text
+    div.appendChild(p)
     
-    container.appendChild(timediv)
+    return div
 }
 function makeSearchDiv() {
     const searchDiv = document.createElement("div")
@@ -96,20 +98,6 @@ function makeSearchDiv() {
         event.preventDefault()
         getCurrentWeather(input.value,loadUi,loadBg)
 })
-}
-function makeLocationDiv(city,country) {
-    const locationdiv = document.createElement("div")
-    locationdiv.classList.add("locationdiv")
-    container.appendChild(locationdiv)
-
-    const h = document.createElement("h1")
-    h.textContent=city
-    locationdiv.appendChild(h)
-
-    const p = document.createElement("p")
-    p.textContent=country
-    locationdiv.appendChild(p)
-
 }
 function makeConditionDiv(icon,text) {
     const div = document.createElement("div")
