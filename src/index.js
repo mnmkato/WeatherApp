@@ -16,6 +16,7 @@ function loadUi(data) {
     
     //display time and date
     const date = new Date(data.location.localtime)
+    //TODO change time format to HH:MM AM/PM
     let time_text = date.toLocaleTimeString({hour:"2-digit",minute:"2-digit",dayPeriod:"narrow"})
     let date_text = date.toLocaleDateString(undefined,{weekday:"long",month:"long",year:"numeric",day:"2-digit"})
     const timeDiv = makeTopdiv(time_text,date_text)
@@ -37,11 +38,30 @@ function loadUi(data) {
     dataContainer.appendChild(conditionDiv)
 
     //display Tempreature
-    let temp_c =data.current.temp_c
-    const tempDiv =  makeTempDiv(temp_c)
+    let temp_c =data.current.temp_c+"\u00B0"
+    const tempDiv =  makeDataDiv(temp_c, "Temperature")
     dataContainer.appendChild(tempDiv)
-}
 
+    //display precipitation
+    let precipitation = data.current.precip_mm+" mm"
+    const precipitationDiv =  makeDataDiv(precipitation,"Precipitation")
+    dataContainer.appendChild(precipitationDiv)
+
+    //display humidity
+    let humidity = data.current.humidity+"%"
+    const humidityDiv =  makeDataDiv(humidity,"Humidity")
+    dataContainer.appendChild(humidityDiv)
+
+    //display wind
+    let wind = data.current.wind_kph+" km/h"
+    const windDiv =  makeDataDiv(wind,"Wind")
+    dataContainer.appendChild(windDiv)
+
+     //display uv index
+     let uv = data.current.uv
+     const uvDiv =  makeDataDiv(uv,"UV index")
+     dataContainer.appendChild(uvDiv)
+}
 function loadBg(data) {
     //dsplay backgorund cover photo
     let photo_url=data.photos[0].src.landscape
@@ -53,13 +73,26 @@ function loadBg(data) {
     //change location and time background and text color
     const backgroundColor = data.photos[0].avg_color;
     const textColor = getReadableTextColor(backgroundColor);
-    const topdivs = document.querySelectorAll(".topdiv")
-    topdivs.forEach(div =>{
+    const divs = document.querySelectorAll(".topdiv,.div,.searchDiv button")
+    divs.forEach(div =>{
         div.style.backgroundColor=backgroundColor
         div.style.color = textColor
     })
 }
+function makeDataDiv(h_text,p_text) {
+    const div = document.createElement("div")
+    div.classList.add("div")
 
+    const h = document.createElement("h1")
+    h.textContent=h_text
+    div.appendChild(h)
+
+    const p = document.createElement("p")
+    p.textContent=p_text
+    div.appendChild(p)
+
+    return div
+}
 function makeTopdiv(h_text,p_text,isLocationDiv){
     const div = document.createElement("div")
     div.classList.add("topdiv")
@@ -84,7 +117,6 @@ function makeSearchDiv() {
 
     const form = document.createElement("form")
     searchDiv.appendChild(form)
-
     const input = document.createElement("input")
     input.setAttribute("type","search")
     form.appendChild(input)
@@ -94,6 +126,7 @@ function makeSearchDiv() {
     btn.setAttribute("type","submit")
     form.appendChild(btn)
 
+    //TODO sanitize inputs, add loading ui and handle response errors
     form.addEventListener("submit",(event)=>{
         event.preventDefault()
         getCurrentWeather(input.value,loadUi,loadBg)
@@ -111,13 +144,5 @@ function makeConditionDiv(icon,text) {
     p.textContent=text
     div.appendChild(p)
 
-    return div
-}
-function makeTempDiv(temp) {
-    const div = document.createElement("div")
-    div.classList.add("div")
-    const h = document.createElement("h1")
-    h.textContent=temp+"\u00B0"
-    div.appendChild(h)
     return div
 }
