@@ -2,14 +2,13 @@ body{
     margin: 0;
     height: 100vh;
     background-color: bisque;
+    display: grid;
+    grid-template-rows: 1fr auto;
 }
 .container{
     display: flex;
-    grid-template-columns: repeat(3,1fr);
     align-items: flex-start;
     justify-content: space-between;
-    background-color: aqua;
-    height: 70%
 }
 
 .timediv{
@@ -21,14 +20,13 @@ body{
     margin: 1rem;
     padding: 1rem;
     min-width: fit-content;
-    background-color: green;
 }
 .locationdiv{
     margin: 1rem;
     padding: 1rem;
     text-align: right;
 }
-.locationdiv>h1{
+.timediv>h1,.locationdiv>h1{
     margin: 0;
 }
 @media (max-width: 500px) {
@@ -36,7 +34,7 @@ body{
         flex-direction: column;    
         align-items: center;
     }
-    .locationdiv{
+    .timediv,.locationdiv{
         text-align: center;
     }
 }
@@ -44,7 +42,6 @@ body{
     display: grid;
     grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
     width: 100%;
-    background-color: greenyellow;
 }
 .div{
     display: flex;
@@ -53,5 +50,4 @@ body{
     align-items: center;
     margin: 1rem;
     padding: 1rem;
-    background-color: grey;
 }
